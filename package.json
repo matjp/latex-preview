@@ -1,0 +1,177 @@
+{
+  "name": "latex-preview",
+  "displayName": "LaTeX Preview",
+  "description": "Preview a typeset LaTeX document in VS Code",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "keywords": [
+    "LaTeX",
+    "preview",
+    "VS Code"
+  ],
+  "publisher": "matjp",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/matjp/latex-preview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/matjp/latex-preview/issues"
+  },
+  "main": "./out/main.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "latex-preview.preview",
+        "title": "LaTeX Preview: Show Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "latex-preview.generatePdf",
+        "title": "LaTeX Preview: Generate PDF File",
+        "icon": "$(file-pdf)"
+      },
+      {
+        "command": "latex-preview.magIncrease",        
+        "title": "LaTeX Preview: Magnification +10%",
+        "icon": "$(add)"
+      },
+      {
+        "command": "latex-preview.magDecrease",
+        "title": "LaTeX Preview: Magnification -10%",
+        "icon": "$(remove)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "latex-preview.preview",
+        "key": "ctrl+shift+l",
+        "when": "editorTextFocus && editorLangId == latex"
+      },
+      {
+        "command": "latex-preview.magIncrease",
+        "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+        "key": "ctrl+shift+up"
+      },
+      {
+        "command": "latex-preview.magDecrease",
+        "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+        "key": "ctrl+shift+down"
+      }
+    ],    
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "latex-preview.magIncrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
+        },
+        {
+          "command": "latex-preview.magDecrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
+        }
+      ],      
+      "editor/title": [
+        {
+          "command": "latex-preview.preview",          
+          "when": "resourceLangId == latex",
+          "group": "navigation"
+        },
+        {
+          "command": "latex-preview.magDecrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+          "group": "navigation@1"
+        },
+        {
+          "command": "latex-preview.magIncrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+          "group": "navigation@3"
+        }
+      ],
+      "webview/context": [
+        {
+          "command": "latex-preview.magIncrease",
+          "when": "webviewId == latexPreview && webviewSection == menu",
+          "group": "1_latexPreview@1"
+        },
+        {
+          "command": "latex-preview.magDecrease",
+          "when": "webviewId == latexPreview && webviewSection == menu",          
+          "group": "1_latexPreview@2"          
+        }
+      ]
+    },    
+    "configuration": {
+      "id": "latexPreview",
+      "title": "LaTeX Preview",
+      "properties": {
+        "latexPreview.dpi": {
+          "type": "number",
+          "default": 96,
+          "description": "Display device resolution in pixels per inch. Default 96."
+        },
+        "latexPreview.pageWidth": {
+          "type": "number",
+          "default": 8.27,
+          "description": "Page width in inches. Default 8.27 (A4)."
+        },
+        "latexPreview.pageHeight": {
+          "type": "number",
+          "default": 11.69,
+          "description": "Page height in inches. Default 11.69 (A4)."
+        },
+        "latexPreview.mag": {
+          "type": "number",
+          "default": 100,
+          "description": "Document magnification(%). Default 100."
+        },
+        "latexPreview.pageBufferSize": {
+          "type": "number",
+          "default": 2,
+          "description": "Number of pages to pre-render. Default 2."
+        },
+        "latexPreview.latexFontDir": {
+          "type": "string",
+          "description": "Path to the LaTeX font directory."
+        },
+        "latexPreview.debugMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Print debug messages? Default false."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile && npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild main=./out/src/extension.js webviewFunctions=./src/webviewFunctions.js reset=./css/reset.css vscode=./css/vscode.css --bundle --outdir=out --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.191",
+    "@types/node": "16.x",
+    "@types/opentype.js": "^1.3.4",
+    "@types/vscode": "^1.73.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
+    "@typescript-eslint/parser": "^5.42.0",
+    "esbuild": "^0.17.3",
+    "eslint": "^8.26.0",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@matjp/dvi-decode": "^0.4.3",
+    "@types/offscreencanvas": "^2019.7.0",
+    "get-system-fonts": "^2.0.2",
+    "lodash": "^4.17.21",
+    "opentype.js": "^1.3.4"
+  }
+}

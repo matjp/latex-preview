@@ -1,0 +1,15 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch LaTeX Preview",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder:latex-preview}"
+			],
+			"sourceMaps": true,
+			"preLaunchTask": "npm: vscode:prepublish"
+		}
+	]
+}

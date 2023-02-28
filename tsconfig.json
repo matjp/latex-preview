@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+		"target": "ES2021",
+		"lib": [
+			"ES2021",
+			"DOM"
+		],
+		"outDir": "out",
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"rootDir": ".",
+		"strict": true,
+		"allowJs": true,
+		"checkJs": false
+	},
+	"exclude": [
+		"node_modules",
+		".vscode-test",
+		"out"
+	]
+}
