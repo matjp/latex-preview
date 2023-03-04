@@ -6,7 +6,7 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 
 ## Features
 
-* Renders directly from DVI - no PDF generation required.
+* Renders from a generated DVI file - no PDF output required.
 * Pages are rendered as needed for faster previewing.
 * Glyph bitmaps are cached to improve rendering speed.
 * Configurable screen DPI for better rendering accuracy.
@@ -16,7 +16,7 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 
 ## Prerequisites
 
-* VS Code >= v1.75
+* VS Code or VSCodium >= v1.75
 * A TeX distribution that includes LuaTeX
 * luaotfload package >= v3.23
 * OpenType or TrueType fonts for all fonts used in your documents
@@ -30,3 +30,23 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 * Page Buffer Size: Number of pages to pre-render. Default 2
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
 * Debug Mode: Print debug messages? Default false
+
+## Getting Started
+
+1. Search for LaTeX Preview in VS Code Extensions and click Install
+2. Go to the extension settings and set the LaTeX font diretory for your LaTeX distribution
+3. Open a LaTeX file and run LaTeX Preview: Show Preview from the Command Palette or click the Preview icon
+
+## No preview showing?
+
+* Check the output log for error messages
+* Set Debug Mode for detailed logs
+* There may be fonts, images or LaTeX packages that were not found
+* Depending on your LaTeX distribution you may or may not be prompted to install packages
+* Install all required fonts and packages and try again
+
+## Possible future enhancements
+
+* Printing
+* Saving of decoded DVI data in JSON format to enable document distribution for the web
+* A NodeJS module for rendering JSON document files to a browser canvas
