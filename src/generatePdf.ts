@@ -22,7 +22,8 @@ export async function generatePdf(srcFile: string, outputChannel: vscode.OutputC
 			outputChannel.appendLine(stderr);			
 		}
 		outputChannel.appendLine('Done.');
-		outputChannel.appendLine('PDF written to file ' + pdfFileName);
+		const pdfFileLink = vscode.Uri.file(pdfFileName);
+		outputChannel.appendLine('PDF written to ' + pdfFileLink);
 	} catch (err: any) {
 		if (err.stdout) {
 			outputChannel.appendLine(err.stdout.toString());
