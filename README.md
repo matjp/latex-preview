@@ -21,6 +21,12 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 * luaotfload package >= v3.23
 * OpenType or TrueType fonts for all fonts used in your documents
 
+## Getting Started
+
+1. Search for LaTeX Preview in VS Code Extensions and click Install
+2. Go to the extension settings and set the LaTeX font diretory for your LaTeX distribution e.g. for MiKTeX on Windows C:\Users\<username>\AppData\Local\Programs\MiKTeX\fonts or TeXLive native on Linux /usr/share/texmf/fonts
+3. Open a LaTeX file and run LaTeX Preview: Show Preview from the Command Palette or click the Preview icon
+
 ## Configuration Options
 
 * DPI: Display device resolution in pixels per inch. Default 96
@@ -30,12 +36,6 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 * Page Buffer Size: Number of pages to pre-render. Default 2
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
 * Debug Mode: Print debug messages? Default false
-
-## Getting Started
-
-1. Search for LaTeX Preview in VS Code Extensions and click Install
-2. Go to the extension settings and set the LaTeX font diretory for your LaTeX distribution
-3. Open a LaTeX file and run LaTeX Preview: Show Preview from the Command Palette or click the Preview icon
 
 ## No preview showing?
 
