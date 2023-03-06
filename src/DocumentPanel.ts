@@ -188,7 +188,7 @@ export class DocumentPanel {
 		}
 		try {
 			const exec = util.promisify(require('child_process').exec);
-			const cmd = 'dvilualatex --halt-on-error --synctex=-1 ' + this.editor.document.fileName;
+			const cmd = 'dvilualatex --halt-on-error --interaction=nonstopmode --synctex=-1 ' + this.editor.document.fileName;
 			this._outputChannel.appendLine(cmd);			
 			const { stdout, stderr } = await exec(cmd, { cwd: docPath });
 			if (this._debugMode) {

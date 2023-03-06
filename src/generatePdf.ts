@@ -14,7 +14,7 @@ export async function generatePdf(srcFile: string, outputChannel: vscode.OutputC
 	}
 	try {
 		const exec = util.promisify(require('child_process').exec);
-		const cmd = 'lualatex --halt-on-error ' + srcFile;
+		const cmd = 'lualatex --halt-on-error --interaction=nonstopmode ' + srcFile;
 		outputChannel.appendLine(cmd);			
 		const { stdout, stderr } = await exec(cmd, { cwd: docPath });
     	outputChannel.appendLine(stdout);
