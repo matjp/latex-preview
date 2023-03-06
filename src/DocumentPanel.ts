@@ -20,14 +20,14 @@ export class DocumentPanel {
 	public pageWidthPixels: number;
 	public pageHeightPixels: number;
 	public marginPixels: number;
+	public pageBufferSize: number;
+	public debugMode: boolean;
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
 	private readonly _outputChannel: vscode.OutputChannel;
 	private readonly _previewStatusBarItem: vscode.StatusBarItem;
 	private readonly _fontMap: Map<string, string>;
 	private readonly _fontCachePath: string;
-	private readonly _pageBufferSize: number;
-	private readonly _debugMode: boolean;
 	private _synctex: SyncTex | undefined;
 	private _synctexBlocksYSorted: SyncTexBlock[] | undefined;
 	private _documentSource: any;
@@ -73,6 +73,13 @@ export class DocumentPanel {
 		// If we already have a panel, show it.
 		if (DocumentPanel.currentPanel) {
 			DocumentPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
+			DocumentPanel.currentPanel.pageBufferSize = pageBufferSize;
+			DocumentPanel.currentPanel.debugMode = debugMode;
+			DocumentPanel.currentPanel.dpi = dpi;
+			DocumentPanel.currentPanel.mag = mag;
+			DocumentPanel.currentPanel.pageWidthPixels = Math.floor(pageWidth * dpi);
+			DocumentPanel.currentPanel.pageHeightPixels = Math.floor(pageHeight * dpi);
+			DocumentPanel.currentPanel.marginPixels = dpi;
 			return;
 		}
 
@@ -108,8 +115,8 @@ export class DocumentPanel {
 		this._extensionUri = extensionUri;
 		this._fontMap = fontMap;
 		this._fontCachePath = fontCachePath;
-		this._pageBufferSize = pageBufferSize;
-		this._debugMode = debugMode;
+		this.pageBufferSize = pageBufferSize;
+		this.debugMode = debugMode;
 		this.dpi = dpi;
 		this.mag = mag;
 		this.pageWidthPixels = Math.floor(pageWidth * dpi);
@@ -191,7 +198,7 @@ export class DocumentPanel {
 			const cmd = 'dvilualatex --halt-on-error --interaction=nonstopmode --synctex=-1 ' + this.editor.document.fileName;
 			this._outputChannel.appendLine(cmd);			
 			const { stdout, stderr } = await exec(cmd, { cwd: docPath });
-			if (this._debugMode) {
+			if (this.debugMode) {
 				this._outputChannel.appendLine(stdout);
 			}
 			if (stderr) {
@@ -199,7 +206,7 @@ export class DocumentPanel {
 			}
 			this._parseSyncTexFile(dviFileName.replace('.dvi', '.synctex'));
 			this._outputChannel.appendLine('Decoding dvi file ' + dviFileName + ' ...');
-			const json = await decodeDviFile(dviFileName, this._fontMap, this.dpi, this.mag, this._debugMode, this._outputChannel.appendLine);
+			const json = await decodeDviFile(dviFileName, this._fontMap, this.dpi, this.mag, this.debugMode, this._outputChannel.appendLine);
 			this._documentSource = JSON.parse(json);
 			this._outputChannel.appendLine('Loading fonts ...');
 			await this._loadFonts();
@@ -284,7 +291,7 @@ export class DocumentPanel {
 	}
 
 	private _renderPagesFrom(pageIndex: number, direction: number) {
-		let pageCount = this._pageBufferSize;
+		let pageCount = this.pageBufferSize;
 		let nextPageIndex: number | undefined;
 		do {
 			nextPageIndex = (pageIndex + (pageCount * direction));
