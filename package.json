@@ -14,7 +14,7 @@
     "preview",
     "VS Code"
   ],
-  "publisher": "matjp",
+  "publisher": "mjpvs",
   "license": "MIT",
   "repository": {
     "url": "https://github.com/matjp/latex-preview.git"
