@@ -225,6 +225,7 @@ export class DocumentPanel {
 			}
 			this._outputChannel.appendLine(String(err));
 			this._outputChannel.appendLine('Could not generate dvi file - review the log for errors.');
+			this.dispose();
 		}
 	}
 
