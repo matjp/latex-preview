@@ -1,6 +1,6 @@
-# LaTeX Preview
+# LaTeX Previewer
 
-LaTeX Preview is a VS Code extension that generates a typeset document from your LaTeX source and renders it directly to the canvas of a VS Code webview.
+LaTeX Previewer is a VS Code extension that generates a typeset document from your LaTeX source and renders it directly to the canvas of a VS Code webview.
 
 ![image](./media/lp.gif)
 
@@ -23,7 +23,7 @@ LaTeX Preview is a VS Code extension that generates a typeset document from your
 
 ## Getting Started
 
-1. Search for LaTeX Preview in VS Code Extensions or Open VSX and click Install
+1. Search for LaTeX Previewer in VS Code Extensions or Open VSX and click Install
 2. Go to the extension settings and set the LaTeX font diretory for your LaTeX distribution e.g. for MiKTeX on Windows C:\Users\<username>\AppData\Local\Programs\MiKTeX\fonts or for TeXLive native on Linux /usr/share/texmf/fonts
 3. Open a LaTeX file and run LaTeX Preview: Show Preview from the Command Palette or click the Preview icon
 
