@@ -1,5 +1,5 @@
 {
-  "name": "latex-preview",
+  "name": "latex-previewer",
   "displayName": "LaTeX Preview",
   "description": "Preview a typeset LaTeX document in VS Code",
   "version": "0.3.0",
