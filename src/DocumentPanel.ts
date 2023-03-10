@@ -194,6 +194,12 @@ export class DocumentPanel {
 			fs.rmSync(dviFileName);
 		}
 		try {
+			if (this.debugMode) {
+				this._outputChannel.appendLine('Fonts found on this system:');
+				this._fontMap.forEach((value, key) => {
+					this._outputChannel.appendLine(value + '/' + key);
+				  });
+			}			
 			const exec = util.promisify(require('child_process').exec);
 			const cmd = 'dvilualatex --halt-on-error --interaction=nonstopmode --synctex=-1 ' + this.editor.document.fileName;
 			this._outputChannel.appendLine(cmd);			
