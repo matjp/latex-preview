@@ -10,7 +10,7 @@ let previewStatusBarItem: vscode.StatusBarItem;
 
 module.exports.activate = async (context: vscode.ExtensionContext) => {
 	if (vscode.window.activeTextEditor?.document?.fileName) {
-		const editor = vscode.window.activeTextEditor;
+		const editor = vscode.window.activeTextEditor;		
 		const ext = path.extname(editor.document.fileName);
 		if (ext === '.tex' || ext === '.latex') {
 			const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
@@ -46,19 +46,22 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			}
 
 			let disposable = vscode.commands.registerCommand('latex-preview.preview', () => {
-				DocumentPanel.documentPathUri = vscode.Uri.file(path.dirname(editor.document.fileName));
-				const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
-				const dpi: number = config?.get('dpi') ?? 96;
-				const pageWidth: number = config?.get('pageWidth') ?? 8.27;
-				const pageHeight: number = config?.get('pageHeight') ?? 11.69;
-				const mag: number = config?.get('mag') ?? 100;		
-				const debugMode: boolean = config?.get('debugMode') ?? false;				
-				const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;				
-				DocumentPanel.createOrShow(
-					context.extensionUri, editor, fontMap, fontCachePath, dpi, pageWidth, pageHeight, mag,
-					pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
-				if (DocumentPanel.currentPanel) {
-					DocumentPanel.currentPanel.generateDocument(editor);
+				const editor = vscode.window.activeTextEditor;
+				if (editor)	{
+					DocumentPanel.documentPathUri = vscode.Uri.file(path.dirname(editor.document.fileName));
+					const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
+					const dpi: number = config?.get('dpi') ?? 96;
+					const pageWidth: number = config?.get('pageWidth') ?? 8.27;
+					const pageHeight: number = config?.get('pageHeight') ?? 11.69;
+					const mag: number = config?.get('mag') ?? 100;		
+					const debugMode: boolean = config?.get('debugMode') ?? false;				
+					const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;				
+					DocumentPanel.createOrShow(
+						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageWidth, pageHeight, mag,
+						pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
+					if (DocumentPanel.currentPanel) {
+						DocumentPanel.currentPanel.generateDocument(editor);
+					}
 				}
 			});
 			context.subscriptions.push(disposable);			
