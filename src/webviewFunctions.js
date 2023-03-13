@@ -73,8 +73,6 @@
         const cnv = document.getElementById('cnv');
         const ctx = cnv ? cnv.getContext('2d', { alpha: false }) : undefined;
         if (pageSource && cnv && ctx) {
-            //enableHighDPICanvas(cnv, ctx);
-
             const osPageCanvas = new OffscreenCanvas(pageWidth, pageHeight);                
             const osPageCtx = osPageCanvas.getContext('2d');
             if (osPageCtx) {
@@ -152,14 +150,4 @@
             }
         }
     }
-
-    function enableHighDPICanvas(canvas, ctx) {
-        const dpr = window.devicePixelRatio;
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        canvas.style.width = `${rect.width}px`;
-        canvas.style.height = `${rect.height}px`;
-    }	
 }());
