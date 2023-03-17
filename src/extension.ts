@@ -96,7 +96,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			disposable = vscode.commands.registerCommand('latex-preview.setPageSize', async () => {
 				if (DocumentPanel.currentPanel?.editor) {
 					const pageSize = await vscode.window.showQuickPick(["A5", "A4", "A3", "US Letter"],
-						{ title: "Select a page size...", ignoreFocusOut: true, canPickMany: false});
+						{ title: "Select a page size...", placeHolder: DocumentPanel.currentPanel.pageSize, ignoreFocusOut: true, canPickMany: false});
 					if (pageSize) {
 						DocumentPanel.currentPanel.pageSize = pageSize;
 						DocumentPanel.currentPanel.pageSizeChanged(pageSize);
