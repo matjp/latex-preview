@@ -9,6 +9,20 @@ import { load, Font } from 'opentype.js';
 import { GlyphPath, getGlyphPaths } from './glyphPaths';
 import throttle from 'lodash/throttle';
 
+type PageDimensions = {
+	pageWidth: number,
+	pageHeight: number
+};
+
+const pageSizeMap = new Map<string, PageDimensions>([
+	["A3", { pageWidth: 297, pageHeight: 420 }],	
+	["A4", { pageWidth: 210, pageHeight: 297 }],
+	["A5", { pageWidth: 148, pageHeight: 210 }],	
+	["US Letter", { pageWidth: 216, pageHeight: 279 }],
+]);
+
+const mmToInchConv = 0.039370079;
+
 export class DocumentPanel {
 	/* Track the current panel. Only allow a single panel to exist at a time. */
 	public static currentPanel: DocumentPanel | undefined;
@@ -17,6 +31,7 @@ export class DocumentPanel {
 	public static documentPathUri: vscode.Uri | undefined;
 	public dpi: number;
 	public mag: number;
+	public pageSize: string;	
 	public pageWidthPixels: number;
 	public pageHeightPixels: number;
 	public marginPixels: number;
@@ -62,8 +77,7 @@ export class DocumentPanel {
 		fontMap: Map<string, string>,
 		fontCachePath: string,
 		dpi: number,
-		pageWidth: number,
-		pageHeight: number,
+		pageSize: string,
 		mag: number,
 		pageBufferSize: number,
 		debugMode: boolean,
@@ -77,8 +91,7 @@ export class DocumentPanel {
 			DocumentPanel.currentPanel.debugMode = debugMode;
 			DocumentPanel.currentPanel.dpi = dpi;
 			DocumentPanel.currentPanel.mag = mag;
-			DocumentPanel.currentPanel.pageWidthPixels = Math.floor(pageWidth * dpi);
-			DocumentPanel.currentPanel.pageHeightPixels = Math.floor(pageHeight * dpi);
+			DocumentPanel.currentPanel._setPageDimensions(pageSize);
 			DocumentPanel.currentPanel.marginPixels = dpi;
 			return;
 		}
@@ -92,7 +105,7 @@ export class DocumentPanel {
 		);
 
 		DocumentPanel.currentPanel = new DocumentPanel(
-			panel, extensionUri, editor, fontMap, fontCachePath, dpi, pageWidth, pageHeight, mag,
+			panel, extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
 			pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
 	}
 
@@ -103,8 +116,7 @@ export class DocumentPanel {
 		fontMap: Map<string, string>,
 		fontCachePath: string,
 		dpi: number,
-		pageWidth: number,
-		pageHeight: number,
+		pageSize: string,
 		mag: number,
 		pageBufferSize: number,
 		debugMode: boolean,
@@ -119,8 +131,16 @@ export class DocumentPanel {
 		this.debugMode = debugMode;
 		this.dpi = dpi;
 		this.mag = mag;
-		this.pageWidthPixels = Math.floor(pageWidth * dpi);
-		this.pageHeightPixels = Math.floor(pageHeight * dpi);
+		this.pageSize = pageSize;
+		this._setPageDimensions(pageSize);
+		const pageDimensions = pageSizeMap.get(pageSize);
+		if (pageDimensions) {
+			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * dpi);
+			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * dpi);
+		} else {
+			this.pageWidthPixels = Math.floor(210 * mmToInchConv * dpi);
+			this.pageHeightPixels = Math.floor(297 * mmToInchConv * dpi);
+		}
 		this.marginPixels = dpi;
 		this. _synctex = undefined;
 		this._synctexBlocksYSorted = undefined;
@@ -177,7 +197,23 @@ export class DocumentPanel {
 	}
 
 	private _updateStatus() {
-		this._previewStatusBarItem.text = `Page ${this._currentPageNo}/${this._documentSource.pages.length} Mag: ${this.mag}% DPI: ${this.dpi}`;
+		this._previewStatusBarItem.text =
+			`Page ${this._currentPageNo}/${this._documentSource.pages.length} Size: ${this.pageSize} Mag: ${this.mag}% DPI: ${this.dpi}`;
+	}
+
+	public pageSizeChanged(pageSize: string) {
+		this._setPageDimensions(pageSize);
+	}
+
+	private _setPageDimensions(pageSize: string) {
+		const pageDimensions = pageSizeMap.get(pageSize);
+		if (pageDimensions) {
+			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * this.dpi);
+			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * this.dpi);
+		} else {
+			this.pageWidthPixels = Math.floor(210 * mmToInchConv * this.dpi);
+			this.pageHeightPixels = Math.floor(297 * mmToInchConv * this.dpi);
+		}
 	}
 
 	public async generateDocument(editor: vscode.TextEditor) {

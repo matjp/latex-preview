@@ -51,13 +51,12 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 					DocumentPanel.documentPathUri = vscode.Uri.file(path.dirname(editor.document.fileName));
 					const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
 					const dpi: number = config?.get('dpi') ?? 96;
-					const pageWidth: number = config?.get('pageWidth') ?? 8.27;
-					const pageHeight: number = config?.get('pageHeight') ?? 11.69;
+					const pageSize: string = config?.get('pageSize') ?? "A4";
 					const mag: number = config?.get('mag') ?? 100;		
 					const debugMode: boolean = config?.get('debugMode') ?? false;				
 					const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;				
 					DocumentPanel.createOrShow(
-						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageWidth, pageHeight, mag,
+						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
 						pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
 					if (DocumentPanel.currentPanel) {
 						DocumentPanel.currentPanel.generateDocument(editor);
@@ -93,7 +92,20 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 				}
 			});
 			context.subscriptions.push(disposable);
-		
+
+			disposable = vscode.commands.registerCommand('latex-preview.setPageSize', async () => {
+				if (DocumentPanel.currentPanel?.editor) {
+					const pageSize = await vscode.window.showQuickPick(["A5", "A4", "A3", "US Letter"],
+						{ title: "Select a page size...", ignoreFocusOut: true, canPickMany: false});
+					if (pageSize) {
+						DocumentPanel.currentPanel.pageSize = pageSize;
+						DocumentPanel.currentPanel.pageSizeChanged(pageSize);
+						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+					}
+				}
+			});
+			context.subscriptions.push(disposable);				
+
 			disposable = vscode.commands.registerCommand('latex-preview.magIncrease', () => {
 				if (DocumentPanel.currentPanel?.editor) {
 					DocumentPanel.currentPanel.mag += 10;

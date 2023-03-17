@@ -37,6 +37,11 @@
         "icon": "$(file-pdf)"
       },
       {
+        "command": "latex-preview.setPageSize",
+        "title": "LaTeX Preview: Set Page Size",
+        "icon": "$(book)"
+      },
+      {
         "command": "latex-preview.magIncrease",        
         "title": "LaTeX Preview: Magnification +10%",
         "icon": "$(add)"
@@ -82,9 +87,14 @@
           "group": "navigation"
         },
         {
+          "command": "latex-preview.setPageSize",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+          "group": "navigation@1"          
+        },
+        {
           "command": "latex-preview.magDecrease",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
-          "group": "navigation@1"
+          "group": "navigation@2"
         },
         {
           "command": "latex-preview.magIncrease",
@@ -94,14 +104,19 @@
       ],
       "webview/context": [
         {
+          "command": "latex-preview.setPageSize",
+          "when": "webviewId == latexPreview && webviewSection == menu",          
+          "group": "1_latexPreview@1"          
+        },
+        {
           "command": "latex-preview.magIncrease",
           "when": "webviewId == latexPreview && webviewSection == menu",
-          "group": "1_latexPreview@1"
+          "group": "1_latexPreview@2"
         },
         {
           "command": "latex-preview.magDecrease",
           "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "1_latexPreview@2"          
+          "group": "1_latexPreview@3"          
         }
       ]
     },    
@@ -114,15 +129,11 @@
           "default": 96,
           "description": "Display device resolution in pixels per inch. Default 96."
         },
-        "latexPreview.pageWidth": {
-          "type": "number",
-          "default": 8.27,
-          "description": "Page width in inches. Default 8.27 (A4)."
-        },
-        "latexPreview.pageHeight": {
-          "type": "number",
-          "default": 11.69,
-          "description": "Page height in inches. Default 11.69 (A4)."
+        "latexPreview.pageSize": {
+          "type": "string",
+          "enum": ["A5", "A4", "A3", "US Letter"],
+          "default": "A4",
+          "description": "Page Size"
         },
         "latexPreview.mag": {
           "type": "number",
