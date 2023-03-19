@@ -5,8 +5,8 @@ import path from 'node:path';
 import { DocumentPanel } from './DocumentPanel';
 import { generatePdf } from './generatePdf';
 
+const pageSizes = ["A5", "A4", "A3", "US Letter", "US Legal"];
 let outputChannel: vscode.OutputChannel;
-let previewStatusBarItem: vscode.StatusBarItem;
 
 module.exports.activate = async (context: vscode.ExtensionContext) => {
 	if (vscode.window.activeTextEditor?.document?.fileName) {
@@ -25,8 +25,6 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			if (!fs.existsSync(fontCachePath)) {
 				fs.mkdirSync(fontCachePath);
 			}
-			previewStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-			context.subscriptions.push(previewStatusBarItem);
 
 			/* Check the version of the luaotfload package */
 			const logFileName = editor.document.fileName.replace(ext, '.log');
@@ -39,7 +37,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 						const luaOtfLoadVerStr = luaOtfLoadStr.substring(luaOtfLoadStr.length-5, luaOtfLoadStr.length);
 						const luaOtfLoadVer = Number.parseFloat(luaOtfLoadVerStr);
 						if (luaOtfLoadVer < 3.23) {
-							vscode.window.showWarningMessage('loaotfload package older than v3.23 detected. Fonts may not be loaded correctly.' );
+							vscode.window.showWarningMessage('luaotfload package older than v3.23 detected. Fonts may not be loaded correctly.' );
 						}
 					}
 				}
@@ -57,7 +55,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 					const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;				
 					DocumentPanel.createOrShow(
 						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
-						pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
+						pageBufferSize, debugMode, outputChannel);
 					if (DocumentPanel.currentPanel) {
 						DocumentPanel.currentPanel.generateDocument(editor);
 					}
@@ -95,11 +93,11 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 
 			disposable = vscode.commands.registerCommand('latex-preview.setPageSize', async () => {
 				if (DocumentPanel.currentPanel?.editor) {
-					const pageSize = await vscode.window.showQuickPick(["A5", "A4", "A3", "US Letter"],
+					const pageSize = await vscode.window.showQuickPick(pageSizes,
 						{ title: "Select a page size...", placeHolder: DocumentPanel.currentPanel.pageSize, ignoreFocusOut: true, canPickMany: false});
 					if (pageSize) {
 						DocumentPanel.currentPanel.pageSize = pageSize;
-						DocumentPanel.currentPanel.pageSizeChanged(pageSize);
+						DocumentPanel.currentPanel.pageSizeChanged();
 						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
 					}
 				}
@@ -109,9 +107,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			disposable = vscode.commands.registerCommand('latex-preview.magIncrease', () => {
 				if (DocumentPanel.currentPanel?.editor) {
 					DocumentPanel.currentPanel.mag += 10;
-					DocumentPanel.currentPanel.pageWidthPixels = Math.floor(DocumentPanel.currentPanel.pageWidthPixels * 1.1);
-					DocumentPanel.currentPanel.pageHeightPixels = Math.floor(DocumentPanel.currentPanel.pageHeightPixels * 1.1);
-					DocumentPanel.currentPanel.marginPixels = Math.floor(DocumentPanel.currentPanel.marginPixels * 1.1);			
+					DocumentPanel.currentPanel.magnificationChanged();
 					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
 				}
 			});
@@ -120,19 +116,32 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			disposable = vscode.commands.registerCommand('latex-preview.magDecrease', () => {
 				if (DocumentPanel.currentPanel?.editor) {
 					DocumentPanel.currentPanel.mag -= 10;
-					DocumentPanel.currentPanel.pageWidthPixels = Math.floor(DocumentPanel.currentPanel.pageWidthPixels * 0.9);
-					DocumentPanel.currentPanel.pageHeightPixels = Math.floor(DocumentPanel.currentPanel.pageHeightPixels * 0.9);
-					DocumentPanel.currentPanel.marginPixels = Math.floor(DocumentPanel.currentPanel.marginPixels * 0.9);
+					DocumentPanel.currentPanel.magnificationChanged();
 					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
 				}
 			});
 			context.subscriptions.push(disposable);		
-		
-			disposable = vscode.commands.registerCommand('latex-preview.magLabelPlaceholder', () => {
-				/* no action - used as a tile bar label */
+
+			disposable = vscode.commands.registerCommand('latex-preview.setMagnification', async () => {
+				if (DocumentPanel.currentPanel?.editor) {
+					const mag = await vscode.window.showInputBox(
+						{ title: "Enter magnification value (%)...",
+						  validateInput: (value) => {
+							const val = parseInt(value);
+							if (Number.isNaN(val) || val < 50 || val > 200) {
+								return "Enter a integer value between 50 an 200";
+							}
+						  },
+						  placeHolder: DocumentPanel.currentPanel.mag.toString(),
+						  ignoreFocusOut: true });
+					if (mag) {
+						DocumentPanel.currentPanel.mag = parseInt(mag);
+						DocumentPanel.currentPanel.magnificationChanged();
+						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+					}
+				}
 			});
-			context.subscriptions.push(disposable);		
-		
+			context.subscriptions.push(disposable);						
 		}			
 	}
 };

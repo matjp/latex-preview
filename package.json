@@ -44,12 +44,17 @@
       {
         "command": "latex-preview.magIncrease",        
         "title": "LaTeX Preview: Magnification +10%",
-        "icon": "$(add)"
+        "icon": "$(zoom-in)"
+      },
+      {
+        "command": "latex-preview.setMagnification",
+        "title": "LaTeX Preview: Set Magnification",
+        "icon": "$(text-size)"
       },
       {
         "command": "latex-preview.magDecrease",
         "title": "LaTeX Preview: Magnification -10%",
-        "icon": "$(remove)"
+        "icon": "$(zoom-out)"
       }
     ],
     "keybindings": [
@@ -72,7 +77,23 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "latex-preview.preview",
+          "when": "resourceLangId == latex"
+        },
+        {
+          "command": "latex-preview.generatePdf",
+          "when": "resourceLangId == latex"
+        },
+        {
+          "command": "latex-preview.setPageSize",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
+        },
+        {
           "command": "latex-preview.magIncrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
+        },
+        {
+          "command": "latex-preview.setMagnification",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
         },
         {
@@ -97,9 +118,14 @@
           "group": "navigation@2"
         },
         {
-          "command": "latex-preview.magIncrease",
+          "command": "latex-preview.setMagnification",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
           "group": "navigation@3"
+        },
+        {
+          "command": "latex-preview.magIncrease",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+          "group": "navigation@4"
         }
       ],
       "webview/context": [
@@ -114,9 +140,14 @@
           "group": "1_latexPreview@2"
         },
         {
+          "command": "latex-preview.setMagnification",
+          "when": "webviewId == latexPreview && webviewSection == menu",
+          "group": "1_latexPreview@3"
+        },
+        {
           "command": "latex-preview.magDecrease",
           "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "1_latexPreview@3"          
+          "group": "1_latexPreview@4"          
         }
       ]
     },    
@@ -131,7 +162,7 @@
         },
         "latexPreview.pageSize": {
           "type": "string",
-          "enum": ["A5", "A4", "A3", "US Letter"],
+          "enum": ["A5", "A4", "A3", "US Letter", "US Legal"],
           "default": "A4",
           "description": "Page Size"
         },

@@ -19,6 +19,7 @@ const pageSizeMap = new Map<string, PageDimensions>([
 	["A4", { pageWidth: 210, pageHeight: 297 }],
 	["A5", { pageWidth: 148, pageHeight: 210 }],	
 	["US Letter", { pageWidth: 216, pageHeight: 279 }],
+	["US Legal", { pageWidth: 216, pageHeight: 356 }]
 ]);
 
 const mmToInchConv = 0.039370079;
@@ -81,8 +82,7 @@ export class DocumentPanel {
 		mag: number,
 		pageBufferSize: number,
 		debugMode: boolean,
-		outputChannel: vscode.OutputChannel,
-		previewStatusBarItem: vscode.StatusBarItem) {
+		outputChannel: vscode.OutputChannel) {
 
 		// If we already have a panel, show it.
 		if (DocumentPanel.currentPanel) {
@@ -91,8 +91,8 @@ export class DocumentPanel {
 			DocumentPanel.currentPanel.debugMode = debugMode;
 			DocumentPanel.currentPanel.dpi = dpi;
 			DocumentPanel.currentPanel.mag = mag;
-			DocumentPanel.currentPanel._setPageDimensions(pageSize);
-			DocumentPanel.currentPanel.marginPixels = dpi;
+			DocumentPanel.currentPanel.marginPixels = Math.floor(dpi * (mag / 100));
+			DocumentPanel.currentPanel._setPageDimensions();			
 			return;
 		}
 
@@ -106,7 +106,7 @@ export class DocumentPanel {
 
 		DocumentPanel.currentPanel = new DocumentPanel(
 			panel, extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
-			pageBufferSize, debugMode, outputChannel, previewStatusBarItem);
+			pageBufferSize, debugMode, outputChannel);
 	}
 
 	private constructor(
@@ -120,11 +120,11 @@ export class DocumentPanel {
 		mag: number,
 		pageBufferSize: number,
 		debugMode: boolean,
-		outputChannel: vscode.OutputChannel,
-		previewStatusBarItem: vscode.StatusBarItem) {
+		outputChannel: vscode.OutputChannel) {
 		this._panel = panel;
 		this.editor = editor;
 		this._extensionUri = extensionUri;
+		this._previewStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 		this._fontMap = fontMap;
 		this._fontCachePath = fontCachePath;
 		this.pageBufferSize = pageBufferSize;
@@ -132,16 +132,15 @@ export class DocumentPanel {
 		this.dpi = dpi;
 		this.mag = mag;
 		this.pageSize = pageSize;
-		this._setPageDimensions(pageSize);
+		this.marginPixels = Math.floor(dpi * (mag / 100));
 		const pageDimensions = pageSizeMap.get(pageSize);
 		if (pageDimensions) {
-			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * dpi);
-			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * dpi);
+			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * dpi * (mag / 100));
+			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * dpi * (mag / 100));
 		} else {
-			this.pageWidthPixels = Math.floor(210 * mmToInchConv * dpi);
-			this.pageHeightPixels = Math.floor(297 * mmToInchConv * dpi);
+			this.pageWidthPixels = Math.floor(210 * mmToInchConv * dpi * (mag / 100));
+			this.pageHeightPixels = Math.floor(297 * mmToInchConv * dpi * (mag / 100));
 		}
-		this.marginPixels = dpi;
 		this. _synctex = undefined;
 		this._synctexBlocksYSorted = undefined;
 		this._documentSource = {};
@@ -156,7 +155,6 @@ export class DocumentPanel {
 		this._scrollLock = false;
 		this._outputChannel = outputChannel;
 		this._outputChannel.show(true);
-		this._previewStatusBarItem = previewStatusBarItem;
 
 		// Set the webview's initial html content
 		this._update();
@@ -201,18 +199,23 @@ export class DocumentPanel {
 			`Page ${this._currentPageNo}/${this._documentSource.pages.length} Size: ${this.pageSize} Mag: ${this.mag}% DPI: ${this.dpi}`;
 	}
 
-	public pageSizeChanged(pageSize: string) {
-		this._setPageDimensions(pageSize);
+	public pageSizeChanged() {
+		this._setPageDimensions();
 	}
 
-	private _setPageDimensions(pageSize: string) {
-		const pageDimensions = pageSizeMap.get(pageSize);
+	public magnificationChanged() {
+		this._setPageDimensions();
+	}
+
+	private _setPageDimensions() {		
+		this.marginPixels = Math.floor(this.dpi * (this.mag / 100));
+		const pageDimensions = pageSizeMap.get(this.pageSize);
 		if (pageDimensions) {
-			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * this.dpi);
-			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * this.dpi);
+			this.pageWidthPixels = Math.floor(pageDimensions.pageWidth * mmToInchConv * this.dpi * (this.mag / 100));
+			this.pageHeightPixels = Math.floor(pageDimensions.pageHeight * mmToInchConv * this.dpi * (this.mag / 100));
 		} else {
-			this.pageWidthPixels = Math.floor(210 * mmToInchConv * this.dpi);
-			this.pageHeightPixels = Math.floor(297 * mmToInchConv * this.dpi);
+			this.pageWidthPixels = Math.floor(210 * mmToInchConv * this.dpi * (this.mag / 100));
+			this.pageHeightPixels = Math.floor(297 * mmToInchConv * this.dpi * (this.mag / 100));
 		}
 	}
 
