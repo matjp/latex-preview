@@ -31,9 +31,8 @@ LaTeX Previewer is a VS Code extension that generates a typeset document from yo
 ## Configuration Options
 
 * DPI: Display device resolution in pixels per inch. Default 96
-* Page Width: Page width in inches. Default 8.27 (A4)
-* Page Height: Page height in inches. Default 11.69 (A4)
-* Magnification: Document magnification(%). Default 100.
+* Page Size: Default A4
+* Magnification: Document magnification(%). Default 100
 * Page Buffer Size: Number of pages to pre-render. Default 2
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
 * Debug Mode: Print debug messages? Default false
