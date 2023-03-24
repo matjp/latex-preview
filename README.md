@@ -4,6 +4,8 @@ LaTeX Previewer is a VS Code extension that generates a typeset document from yo
 
 ![image](./media/lp.gif)
 
+Note: LaTeX Previewer works with LuaLaTeX compatible source files. If you are currently using another LaTeX engine you may need to modify your source code to make it LuaLaTeX compatible. A good starting point for those new to LuaLaTeX is [A Guide to LuaLaTeX](http://tug.ctan.org/info/luatex/lualatex-doc/lualatex-doc.pdf).
+
 ## Features
 
 * Renders from a generated DVI file - no PDF output required.
@@ -37,6 +39,15 @@ LaTeX Previewer is a VS Code extension that generates a typeset document from yo
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
 * Debug Mode: Print debug messages? Default false
 
+## Commands
+
+* Show Preview (Ctrl+Shift+L): Opens the Preview window, compiles your document, and renders it
+* Set Page Size: Choose from a list of page sizes. Recompiles after selection
+* Set Magnification: Enter a new magnification percentage. Recompiles after entry
+* Magnification +10% (Ctrl+Shift+UpArrow): Increase magnification by 10% and recompile
+* Magnification -10% (Ctrl+Shift+DownArrow): Decrease magnification by 10% and recompile
+* Generate PDF File: Compiles your document to a PDF file
+
 ## No preview showing?
 
 * Check the output log for error messages
@@ -46,6 +57,7 @@ LaTeX Previewer is a VS Code extension that generates a typeset document from yo
 * Depending on your LaTeX distribution you may or may not be prompted to install packages
 * If you are using math packages ensure that you add the ```unicode-math``` package after all other math packages.
 * If you are using the ```amsart``` document class you may need to use the ```noamsfonts``` option
+* Check package documentation for compatibility with LuaLaTeX. You may need to choose alternative packages.
 * Install all required fonts and packages and try again
 
 ## Possible future enhancements
