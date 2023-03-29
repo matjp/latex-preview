@@ -2,6 +2,7 @@
     let marginPixels;
     let pageWidth;
     let pageHeight;
+    let pageGap;
     let glyphBitmaps = [];
     let renderComplete = false;
     let scrollTimeoutId;
@@ -60,8 +61,9 @@
             marginPixels = pageMetrics.marginPixels;
             pageWidth = pageMetrics.pageWidth;
             pageHeight = pageMetrics.pageHeight;       
+            pageGap = pageMetrics.pageGap;
             cnv.width = pageWidth;
-            cnv.height = pageMetrics.pageCount * pageHeight;
+            cnv.height = pageMetrics.pageCount * (pageHeight + pageGap);
         }
         renderComplete = false;
     }
@@ -120,7 +122,7 @@
                     });
 
                     const pageBitmap = osPageCanvas.transferToImageBitmap();
-                    ctx.drawImage(pageBitmap, 0, pageIndex * pageHeight);
+                    ctx.drawImage(pageBitmap, 0, pageIndex * (pageHeight + pageGap));
                     vscode.postMessage({
                         command: 'pageRendered',
                         pageIndex: pageIndex

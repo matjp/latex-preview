@@ -184,6 +184,11 @@
           "type": "boolean",
           "default": false,
           "description": "Print debug messages? Default false."
+        },
+        "latexPreview.pageGap": {
+          "type": "number",
+          "default": 0,
+          "description": "Render pages separated by this number of pixels. Default 0."
         }
       }
     }

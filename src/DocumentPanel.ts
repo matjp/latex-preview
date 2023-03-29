@@ -37,6 +37,7 @@ export class DocumentPanel {
 	public pageHeightPixels: number;
 	public marginPixels: number;
 	public pageBufferSize: number;
+	public pageGap: number;
 	public debugMode: boolean;
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionUri: vscode.Uri;
@@ -81,6 +82,7 @@ export class DocumentPanel {
 		pageSize: string,
 		mag: number,
 		pageBufferSize: number,
+		pageGap: number,
 		debugMode: boolean,
 		outputChannel: vscode.OutputChannel) {
 
@@ -88,6 +90,7 @@ export class DocumentPanel {
 		if (DocumentPanel.currentPanel) {
 			DocumentPanel.currentPanel._panel.reveal(vscode.ViewColumn.Beside);
 			DocumentPanel.currentPanel.pageBufferSize = pageBufferSize;
+			DocumentPanel.currentPanel.pageGap = pageGap;
 			DocumentPanel.currentPanel.debugMode = debugMode;
 			DocumentPanel.currentPanel.dpi = dpi;
 			DocumentPanel.currentPanel.mag = mag;
@@ -106,7 +109,7 @@ export class DocumentPanel {
 
 		DocumentPanel.currentPanel = new DocumentPanel(
 			panel, extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
-			pageBufferSize, debugMode, outputChannel);
+			pageBufferSize, pageGap, debugMode, outputChannel);
 	}
 
 	private constructor(
@@ -119,6 +122,7 @@ export class DocumentPanel {
 		pageSize: string,
 		mag: number,
 		pageBufferSize: number,
+		pageGap: number,
 		debugMode: boolean,
 		outputChannel: vscode.OutputChannel) {
 		this._panel = panel;
@@ -128,6 +132,7 @@ export class DocumentPanel {
 		this._fontMap = fontMap;
 		this._fontCachePath = fontCachePath;
 		this.pageBufferSize = pageBufferSize;
+		this.pageGap = pageGap;
 		this.debugMode = debugMode;
 		this.dpi = dpi;
 		this.mag = mag;
@@ -307,7 +312,7 @@ export class DocumentPanel {
 					this._synctex?.blocks.sort(({ lineNumber: a }, { lineNumber: b }) => a - b);
 					this._synctexBlocksYSorted = [...this._synctex?.blocks].sort(
 						({ page: p1, bottom: b1 }, { page: p2, bottom: b2 }) => (
-							(p1 * this.pageHeightPixels) + b1) - ((p2 * this.pageHeightPixels) + b2
+							(p1 * (this.pageHeightPixels + this.pageGap)) + b1) - ((p2 * (this.pageHeightPixels + this.pageGap)) + b2
 						)
 					);
 				} catch (err) {
@@ -325,7 +330,8 @@ export class DocumentPanel {
 				pageCount: this._documentSource.pages.length,
 				marginPixels: this.marginPixels,
 				pageWidth: this.pageWidthPixels,
-				pageHeight: this.pageHeightPixels
+				pageHeight: this.pageHeightPixels,
+				pageGap: this.pageGap
 			}
 		});
 	}
@@ -418,7 +424,7 @@ export class DocumentPanel {
 					if (currentPageIndex !== block.page - 1) {
 						currentPageIndex = block.page - 1;
 					}
-					pageTop = currentPageIndex * this.pageHeightPixels;
+					pageTop = currentPageIndex * (this.pageHeightPixels + this.pageGap);
 					const y = yOffset + pageTop + block.bottom;
 					if (y > maxY) {
 						maxY = y;
@@ -429,7 +435,7 @@ export class DocumentPanel {
 			const scrollBlock = (bottomBlock?.left === leftmostBlock?.left) ? bottomBlock : leftmostBlock;
 			if (scrollBlock) {
 				const vPos = yOffset + pageTop + (scrollBlock.bottom - scrollBlock.height);
-				pageIndex = Math.floor(vPos / this.pageHeightPixels); 
+				pageIndex = Math.floor(vPos / (this.pageHeightPixels + this.pageGap));
 				this._renderPagesFrom(pageIndex, this._getScrollDirection(vPos));
 				this._panel.webview.postMessage({ type: 'scroll', value: { vPos: vPos } });
 			}
@@ -441,9 +447,9 @@ export class DocumentPanel {
 					if (currentPageIndex !== glueElement.page - 1) {
 						currentPageIndex = glueElement.page - 1;
 					}
-					pageTop = currentPageIndex * this.pageHeightPixels;
+					pageTop = currentPageIndex * (this.pageHeightPixels + this.pageGap);
 					const vPos = yOffset + pageTop + (glueElement.bottom - 15);
-					pageIndex = Math.floor(vPos / this.pageHeightPixels); 
+					pageIndex = Math.floor(vPos / (this.pageHeightPixels + this.pageGap));
 					this._renderPagesFrom(pageIndex, this._getScrollDirection(vPos));
 					this._panel.webview.postMessage({ type: 'scroll', value: { vPos: vPos } });
 				}
@@ -455,7 +461,7 @@ export class DocumentPanel {
 		if (scrollY === this._webviewScrollYPos) {
 			return;
 		}
-		const pageIndex = Math.floor(scrollY / this.pageHeightPixels); 
+		const pageIndex = Math.floor(scrollY / (this.pageHeightPixels + this.pageGap));
 		this._currentPageNo = pageIndex + 1;
 		this._updateStatus();
 		this._renderPagesFrom(pageIndex, this._getScrollDirection(scrollY));
@@ -470,8 +476,8 @@ export class DocumentPanel {
 
 	private _lineFromScrollPos(scrollY: number): number | undefined {
 		const yOffset = this._synctex?.offset.y || this.dpi;
-		const pageIndex = Math.floor(scrollY / this.pageHeightPixels);
-		const pageTop = (pageIndex * this.pageHeightPixels);
+		const pageIndex = Math.floor(scrollY / (this.pageHeightPixels + this.pageGap));
+		const pageTop = (pageIndex * (this.pageHeightPixels + this.pageGap));
 		let y = scrollY - (pageTop + yOffset);
 		let lineIndex: number;
 		if (this._synctexBlocksYSorted) {

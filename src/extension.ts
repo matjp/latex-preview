@@ -52,10 +52,11 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 					const pageSize: string = config?.get('pageSize') ?? "A4";
 					const mag: number = config?.get('mag') ?? 100;		
 					const debugMode: boolean = config?.get('debugMode') ?? false;				
-					const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;				
+					const pageBufferSize: number =  config?.get('pageBufferSize') ?? 2;
+					const pageGap: number = config?.get('pageGap') ?? 0;
 					DocumentPanel.createOrShow(
 						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
-						pageBufferSize, debugMode, outputChannel);
+						pageBufferSize, pageGap, debugMode, outputChannel);
 					if (DocumentPanel.currentPanel) {
 						DocumentPanel.currentPanel.generateDocument(editor);
 					}
