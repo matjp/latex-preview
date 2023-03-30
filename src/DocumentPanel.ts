@@ -566,6 +566,27 @@ export class DocumentPanel {
 			</body>
 			</html>`;
 	}
+
+	public async exportDocument() {
+		this._outputChannel.clear();
+		this._outputChannel.show();
+		const srcFile = this.editor.document.fileName;
+		const docPath = path.dirname(srcFile);
+		const ext = path.extname(srcFile);			
+		const jsonFileName = srcFile.replace(ext, '.json');
+		if (fs.existsSync(jsonFileName)) {
+			fs.rmSync(jsonFileName);
+		}
+		try {
+			const json = JSON.stringify(this._documentSource, null, 4);
+			fsPromises.writeFile(jsonFileName, json);
+			const jsonFileLink = vscode.Uri.file(jsonFileName);
+			this._outputChannel.appendLine('Document JSON written to ' + jsonFileLink);
+		} catch (err: any) {
+			this._outputChannel.appendLine(String(err));
+			this._outputChannel.appendLine('Failed to write JSON file.');
+		}		
+	}
 }
 
 export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {

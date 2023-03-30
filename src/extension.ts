@@ -143,6 +143,13 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 				}
 			});
 			context.subscriptions.push(disposable);						
+
+			disposable = vscode.commands.registerCommand('latex-preview.exportDocument', () => {
+				if (DocumentPanel.currentPanel?.editor) {
+					DocumentPanel.currentPanel.exportDocument();
+				}
+			});
+			context.subscriptions.push(disposable);	
 		}			
 	}
 };

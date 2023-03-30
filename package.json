@@ -55,6 +55,11 @@
         "command": "latex-preview.magDecrease",
         "title": "LaTeX Preview: Magnification -10%",
         "icon": "$(zoom-out)"
+      },
+      {
+        "command": "latex-preview.exportDocument",
+        "title": "LaTeX Preview: Export Document as JSON",
+        "icon": "$(export)"
       }
     ],
     "keybindings": [
@@ -99,7 +104,11 @@
         {
           "command": "latex-preview.magDecrease",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
-        }
+        },
+        {
+          "command": "latex-preview.exportDocument",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
+        }        
       ],      
       "editor/title": [
         {
@@ -126,6 +135,11 @@
           "command": "latex-preview.magIncrease",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
           "group": "navigation@4"
+        },
+        {
+          "command": "latex-preview.exportDocument",
+          "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
+          "group": "navigation@5"
         }
       ],
       "webview/context": [
@@ -137,17 +151,22 @@
         {
           "command": "latex-preview.magIncrease",
           "when": "webviewId == latexPreview && webviewSection == menu",
-          "group": "1_latexPreview@2"
+          "group": "2_latexPreview@1"
         },
         {
           "command": "latex-preview.setMagnification",
           "when": "webviewId == latexPreview && webviewSection == menu",
-          "group": "1_latexPreview@3"
+          "group": "2_latexPreview@2"
         },
         {
           "command": "latex-preview.magDecrease",
           "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "1_latexPreview@4"          
+          "group": "2_latexPreview@3"          
+        },
+        {
+          "command": "latex-preview.exportDocument",
+          "when": "webviewId == latexPreview && webviewSection == menu",          
+          "group": "3_latexPreview@1"          
         }
       ]
     },    
