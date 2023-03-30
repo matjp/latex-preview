@@ -37,6 +37,7 @@ Note: LaTeX Previewer works with LuaLaTeX compatible source files. If you are cu
 * Magnification: Document magnification(%). Default 100
 * Page Buffer Size: Number of pages to pre-render. Default 2
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
+* Page Gap: Render pages separated by this number of pixels. Default 0
 * Debug Mode: Print debug messages? Default false
 
 ## Commands
@@ -47,6 +48,7 @@ Note: LaTeX Previewer works with LuaLaTeX compatible source files. If you are cu
 * Magnification +10% (Ctrl+Shift+UpArrow): Increase magnification by 10% and recompile
 * Magnification -10% (Ctrl+Shift+DownArrow): Decrease magnification by 10% and recompile
 * Generate PDF File: Compiles your document to a PDF file
+* Export to JSON: Export the decoded DVI data as a JSON layout file. The schema for the layout file is [here](https://github.com/matjp/dvi-decode/blob/main/dvi-doc.json).
 
 ## No preview showing?
 
@@ -64,5 +66,4 @@ Note: LaTeX Previewer works with LuaLaTeX compatible source files. If you are cu
 
 * Color text support
 * Printing
-* Saving of decoded DVI data in JSON format to enable document distribution for the web
-* A NodeJS module for rendering JSON document files to a browser canvas
+* A NodeJS module for rendering JSON layout files to a browser canvas
