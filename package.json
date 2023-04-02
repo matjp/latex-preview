@@ -3,7 +3,7 @@
   "displayName": "LaTeX Previewer",
   "description": "Preview a typeset LaTeX document in VS Code",
   "icon": "media/lp.png",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "engines": {
     "vscode": "^1.75.0"
   },
