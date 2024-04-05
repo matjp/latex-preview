@@ -8,6 +8,7 @@ import { SyncTex, parseSyncTex, SyncTexBlock } from './synctexParser';
 import { load, Font } from 'opentype.js';
 import { GlyphPath, getGlyphPaths } from './glyphPaths';
 import throttle from 'lodash/throttle';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
 type PageDimensions = {
 	pageWidth: number,
@@ -224,7 +225,7 @@ export class DocumentPanel {
 		}
 	}
 
-	public async generateDocument(editor: vscode.TextEditor) {
+	public async generateDocument(editor: vscode.TextEditor, reporter: TelemetryReporter) {
 		this._outputChannel.clear();
 		this._resetPrivateVars();		
 		if (editor.document.fileName !== this.editor.document.fileName) {
@@ -275,6 +276,7 @@ export class DocumentPanel {
 			}
 			this._outputChannel.appendLine(String(err));
 			this._outputChannel.appendLine('Could not generate dvi file - review the log for errors.');
+			reporter.sendTelemetryErrorEvent('error(generateDocument)', { 'errorString': String(err) });
 			this.dispose();
 		}
 	}
@@ -567,7 +569,7 @@ export class DocumentPanel {
 			</html>`;
 	}
 
-	public async exportDocument() {
+	public async exportDocument(reporter: TelemetryReporter) {
 		this._outputChannel.clear();
 		this._outputChannel.show();
 		const srcFile = this.editor.document.fileName;
@@ -585,6 +587,7 @@ export class DocumentPanel {
 		} catch (err: any) {
 			this._outputChannel.appendLine(String(err));
 			this._outputChannel.appendLine('Failed to write JSON file.');
+			reporter.sendTelemetryErrorEvent('error(exportDocument)', { 'errorString': String(err) });
 		}		
 	}
 }

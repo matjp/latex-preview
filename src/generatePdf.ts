@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import path from 'node:path';
 import fs from 'node:fs';
 import util from 'util';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
-export async function generatePdf(srcFile: string, outputChannel: vscode.OutputChannel) {
+export async function generatePdf(srcFile: string, outputChannel: vscode.OutputChannel, reporter: TelemetryReporter) {
 	outputChannel.clear();
 	outputChannel.show();
 	const docPath = path.dirname(srcFile);
@@ -30,6 +31,7 @@ export async function generatePdf(srcFile: string, outputChannel: vscode.OutputC
 		}
 		outputChannel.appendLine(String(err));
 		outputChannel.appendLine('Could not generate pdf file - review the log for errors.');
+		reporter.sendTelemetryErrorEvent('error(generatePdf)', { 'errorString': String(err) });
 	}
 }
 

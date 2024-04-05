@@ -4,6 +4,7 @@
   "description": "Preview a typeset LaTeX document in VS Code",
   "icon": "media/lp.png",
   "version": "0.9.5",
+  "aiKey": "54904981-eb08-4c1a-b29d-243aaa524153",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -46,7 +47,7 @@
         "icon": "$(book)"
       },
       {
-        "command": "latex-preview.magIncrease",        
+        "command": "latex-preview.magIncrease",
         "title": "LaTeX Preview: Magnification +10%",
         "icon": "$(zoom-in)"
       },
@@ -82,7 +83,7 @@
         "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
         "key": "ctrl+shift+down"
       }
-    ],    
+    ],
     "menus": {
       "commandPalette": [
         {
@@ -112,18 +113,18 @@
         {
           "command": "latex-preview.exportDocument",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview"
-        }        
-      ],      
+        }
+      ],
       "editor/title": [
         {
-          "command": "latex-preview.preview",          
+          "command": "latex-preview.preview",
           "when": "resourceLangId == latex",
           "group": "navigation"
         },
         {
           "command": "latex-preview.setPageSize",
           "when": "activeWebviewPanelId == latexPreview || activeCustomEditorId == latexPreview",
-          "group": "navigation@1"          
+          "group": "navigation@1"
         },
         {
           "command": "latex-preview.magDecrease",
@@ -149,8 +150,8 @@
       "webview/context": [
         {
           "command": "latex-preview.setPageSize",
-          "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "1_latexPreview@1"          
+          "when": "webviewId == latexPreview && webviewSection == menu",
+          "group": "1_latexPreview@1"
         },
         {
           "command": "latex-preview.magIncrease",
@@ -164,16 +165,16 @@
         },
         {
           "command": "latex-preview.magDecrease",
-          "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "2_latexPreview@3"          
+          "when": "webviewId == latexPreview && webviewSection == menu",
+          "group": "2_latexPreview@3"
         },
         {
           "command": "latex-preview.exportDocument",
-          "when": "webviewId == latexPreview && webviewSection == menu",          
-          "group": "3_latexPreview@1"          
+          "when": "webviewId == latexPreview && webviewSection == menu",
+          "group": "3_latexPreview@1"
         }
       ]
-    },    
+    },
     "configuration": {
       "id": "latexPreview",
       "title": "LaTeX Preview",
@@ -185,7 +186,13 @@
         },
         "latexPreview.pageSize": {
           "type": "string",
-          "enum": ["A5", "A4", "A3", "US Letter", "US Legal"],
+          "enum": [
+            "A5",
+            "A4",
+            "A3",
+            "US Letter",
+            "US Legal"
+          ],
           "default": "A4",
           "description": "Page Size"
         },
@@ -212,6 +219,11 @@
           "type": "number",
           "default": 0,
           "description": "Render pages separated by this number of pixels. Default 0."
+        },
+        "latexPreview.telemetry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable sending error and usage events to help improve the software."
         }
       }
     }
@@ -240,6 +252,7 @@
   "dependencies": {
     "@matjp/dvi-decode": "^0.4.3",
     "@types/offscreencanvas": "^2019.7.0",
+    "@vscode/extension-telemetry": "^0.9.6",
     "get-system-fonts": "^2.0.2",
     "lodash": "^4.17.21",
     "opentype.js": "^1.3.4"

@@ -4,16 +4,29 @@ import getSystemFonts from 'get-system-fonts';
 import path from 'node:path';
 import { DocumentPanel } from './DocumentPanel';
 import { generatePdf } from './generatePdf';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
 const pageSizes = ["A5", "A4", "A3", "US Letter", "US Legal"];
 let outputChannel: vscode.OutputChannel;
+let telemetry: boolean;
+let telemetryReporter: TelemetryReporter;
 
 module.exports.activate = async (context: vscode.ExtensionContext) => {
+	const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
+	telemetry = config?.get('telemetry') ?? false;
+	if (telemetry) {
+		telemetryReporter = new TelemetryReporter(
+			context.extension.packageJSON.aiKey
+		);
+	};
+	context.subscriptions.push(telemetryReporter);
+	if (telemetry) {
+		telemetryReporter?.sendTelemetryEvent('extension-activated');
+	};
 	if (vscode.window.activeTextEditor?.document?.fileName) {
 		const editor = vscode.window.activeTextEditor;		
 		const ext = path.extname(editor.document.fileName);
 		if (ext === '.tex' || ext === '.latex') {
-			const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
 			const latexFontDir: string = config?.get('latexFontDir') ?? '';
 			const fontFiles = await getSystemFonts({additionalFolders: [latexFontDir], extensions: ['ttf', 'otf']});
 			const fontMap = new Map();	
@@ -44,6 +57,9 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 			}
 
 			let disposable = vscode.commands.registerCommand('latex-preview.preview', () => {
+				if (telemetry) {
+					telemetryReporter?.sendTelemetryEvent('preview-command');
+				};
 				const editor = vscode.window.activeTextEditor;
 				if (editor)	{
 					DocumentPanel.documentPathUri = vscode.Uri.file(path.dirname(editor.document.fileName));
@@ -58,18 +74,21 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 						context.extensionUri, editor, fontMap, fontCachePath, dpi, pageSize, mag,
 						pageBufferSize, pageGap, debugMode, outputChannel);
 					if (DocumentPanel.currentPanel) {
-						DocumentPanel.currentPanel.generateDocument(editor);
+						DocumentPanel.currentPanel.generateDocument(editor, telemetryReporter);
 					}
 				}
 			});
 			context.subscriptions.push(disposable);			
 
 			disposable = vscode.commands.registerCommand('latex-preview.generatePdf', () => {
+				if (telemetry) {
+					telemetryReporter?.sendTelemetryEvent('generate-pdf-command');
+				};
 				if (vscode.window.activeTextEditor?.document?.fileName) {
 					const editor = vscode.window.activeTextEditor;
 					const ext: string = path.extname(editor.document.fileName);
 					if (ext === '.tex' || ext === '.latex') {
-						generatePdf(editor.document.fileName, outputChannel);
+						generatePdf(editor.document.fileName, outputChannel, telemetryReporter);
 					}
 				}
 			});
@@ -87,7 +106,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 		
 			disposable = vscode.workspace.onDidSaveTextDocument( async (e: vscode.TextDocument) => {	
 				if (vscode.window.activeTextEditor && e.fileName === DocumentPanel.currentPanel?.editor?.document?.fileName) {
-					DocumentPanel.currentPanel.generateDocument(vscode.window.activeTextEditor);
+					DocumentPanel.currentPanel.generateDocument(vscode.window.activeTextEditor, telemetryReporter);
 				}
 			});
 			context.subscriptions.push(disposable);
@@ -99,7 +118,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 					if (pageSize) {
 						DocumentPanel.currentPanel.pageSize = pageSize;
 						DocumentPanel.currentPanel.pageSizeChanged();
-						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor, telemetryReporter);
 					}
 				}
 			});
@@ -109,7 +128,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 				if (DocumentPanel.currentPanel?.editor) {
 					DocumentPanel.currentPanel.mag += 10;
 					DocumentPanel.currentPanel.magnificationChanged();
-					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor, telemetryReporter);
 				}
 			});
 			context.subscriptions.push(disposable);		
@@ -118,7 +137,7 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 				if (DocumentPanel.currentPanel?.editor) {
 					DocumentPanel.currentPanel.mag -= 10;
 					DocumentPanel.currentPanel.magnificationChanged();
-					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+					DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor, telemetryReporter);
 				}
 			});
 			context.subscriptions.push(disposable);		
@@ -138,15 +157,18 @@ module.exports.activate = async (context: vscode.ExtensionContext) => {
 					if (mag) {
 						DocumentPanel.currentPanel.mag = parseInt(mag);
 						DocumentPanel.currentPanel.magnificationChanged();
-						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor);
+						DocumentPanel.currentPanel.generateDocument(DocumentPanel.currentPanel.editor, telemetryReporter);
 					}
 				}
 			});
 			context.subscriptions.push(disposable);						
 
 			disposable = vscode.commands.registerCommand('latex-preview.exportDocument', () => {
+				if (telemetry) {
+					telemetryReporter?.sendTelemetryEvent('export-command');
+				}
 				if (DocumentPanel.currentPanel?.editor) {
-					DocumentPanel.currentPanel.exportDocument();
+					DocumentPanel.currentPanel.exportDocument(telemetryReporter);
 				}
 			});
 			context.subscriptions.push(disposable);	
