@@ -39,6 +39,7 @@ Note: LaTeX Previewer works with LuaLaTeX compatible source files. If you are cu
 * LaTeX Font Dir: Path to the font directory of your LaTeX distribution. Required
 * Page Gap: Render pages separated by this number of pixels. Default 0
 * Debug Mode: Print debug messages? Default false
+* Telemetry: Enable sending error and usage events to help improve the software. Default true
 
 ## Commands
 
