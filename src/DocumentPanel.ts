@@ -201,8 +201,10 @@ export class DocumentPanel {
 	}
 
 	private _updateStatus() {
-		this._previewStatusBarItem.text =
-			`Page ${this._currentPageNo}/${this._documentSource.pages.length} Size: ${this.pageSize} Mag: ${this.mag}% DPI: ${this.dpi}`;
+		if (this._documentSource?.pages) {
+			this._previewStatusBarItem.text =
+				`Page ${this._currentPageNo}/${this._documentSource.pages.length} Size: ${this.pageSize} Mag: ${this.mag}% DPI: ${this.dpi}`;
+		}
 	}
 
 	public pageSizeChanged() {
