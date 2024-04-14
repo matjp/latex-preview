@@ -3,8 +3,8 @@
   "displayName": "LaTeX Previewer",
   "description": "Preview a typeset LaTeX document in VS Code",
   "icon": "media/lp.png",
-  "version": "0.9.8",
-  "aiKey": "54904981-eb08-4c1a-b29d-243aaa524153",
+  "version": "0.9.9",
+  "aiKey": "",
   "engines": {
     "vscode": "^1.75.0"
   },
