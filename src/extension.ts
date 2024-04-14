@@ -13,7 +13,8 @@ let telemetryReporter: TelemetryReporter;
 
 module.exports.activate = async (context: vscode.ExtensionContext) => {
 	const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('latexPreview');
-	telemetry = config?.get('telemetry') ?? false;
+	//telemetry = config?.get('telemetry') ?? false;
+	telemetry = false;
 	if (telemetry) {
 		telemetryReporter = new TelemetryReporter(
 			context.extension.packageJSON.aiKey

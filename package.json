@@ -222,7 +222,7 @@
         },
         "latexPreview.telemetry": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Enable sending error and usage events to help improve the software."
         }
       }

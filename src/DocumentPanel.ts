@@ -278,7 +278,7 @@ export class DocumentPanel {
 			}
 			this._outputChannel.appendLine(String(err));
 			this._outputChannel.appendLine('Could not generate dvi file - review the log for errors.');
-			reporter.sendTelemetryErrorEvent('error(generateDocument)', { 'errorString': String(err) });
+			reporter?.sendTelemetryErrorEvent('error(generateDocument)', { 'errorString': String(err) });
 			this.dispose();
 		}
 	}
@@ -589,7 +589,7 @@ export class DocumentPanel {
 		} catch (err: any) {
 			this._outputChannel.appendLine(String(err));
 			this._outputChannel.appendLine('Failed to write JSON file.');
-			reporter.sendTelemetryErrorEvent('error(exportDocument)', { 'errorString': String(err) });
+			reporter?.sendTelemetryErrorEvent('error(exportDocument)', { 'errorString': String(err) });
 		}		
 	}
 }
